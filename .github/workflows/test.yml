@@ -1,0 +1,34 @@
+name: Test X Authentication
+
+on:
+  workflow_dispatch: # Allows you to manually trigger it from the "Actions" tab
+
+jobs:
+  run-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install playwright
+          playwright install chromium --with-deps
+
+      - name: Execute Auth Test
+        env:
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+        run: python test_auth.py
+
+      - name: Upload Test Screenshot
+        uses: actions/upload-artifact@v4
+        if: always() # Always run this step so you can check the image even if it fails
+        with:
+          name: x-test-screenshot
+          path: x_test_capture.png
+
