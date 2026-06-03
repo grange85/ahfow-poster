@@ -1,0 +1,42 @@
+name: Auto Post Karakeep feed
+
+on:
+  schedule:
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+
+# Grant write access to repository contents
+permissions:
+  contents: write
+
+jobs:
+  post-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install playwright feedparser
+          playwright install chromium --with-deps
+
+      - name: Run Script for News
+        env:
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+        run: python tweet_browser.py "https://aheadfullofwishes.substack.com/feed"
+
+      # Automatically commit history changes back to Github
+      - name: Commit and Push History Log
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@://github.com"
+          git add tweeted_history.txt || true
+          git commit -m "Update tweeted history log [skip ci]" || true
+          git push
+
