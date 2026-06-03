@@ -2,7 +2,7 @@ name: Auto Post Karakeep feed
 
 on:
   schedule:
-    - cron: '0 15 * * *'
+    - cron: '30 */2 * * *'
   workflow_dispatch:
 
 # Grant write access to repository contents
@@ -26,7 +26,7 @@ jobs:
           pip install playwright feedparser
           playwright install chromium --with-deps
 
-      - name: Run Script for News
+      - name: Run Script for Karakeep bookmarks
         env:
           X_COOKIES: ${{ secrets.X_COOKIES }}
         run: python tweet_browser.py "https://keep.grange85.co.uk/api/v1/rss/lists/fok868roy772b9vn11t9hran?token=12768d7138cca9450bb9e9928c88ae2c364fa6089556a745a07f8a5126a2b21c"
