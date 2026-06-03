@@ -2,7 +2,7 @@ name: Playwright Auto Post to X
 
 on:
   schedule:
-#    - cron: '0 */3 * * *' # Triggers every 3 hours
+   - cron: '0 */3 * * *' # Triggers every 3 hours
   workflow_dispatch: # Allows manual triggers
 
 jobs:
