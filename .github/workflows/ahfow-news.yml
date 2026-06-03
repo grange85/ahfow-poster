@@ -1,4 +1,4 @@
-name: Auto Post News Feed
+name: Auto Post News feed
 
 on:
   schedule:

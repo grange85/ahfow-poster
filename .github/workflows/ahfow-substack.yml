@@ -1,4 +1,4 @@
-name: Auto Post Karakeep feed
+name: Auto Post Substack feed
 
 on:
   schedule:
