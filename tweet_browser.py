@@ -10,7 +10,7 @@ HISTORY_FILE = "tweeted_history.txt"
 today = date.today()
 # Format the date as YYYYMMDD
 formatted_date = today.strftime("%Y%m%d")
-url_querystring = "?utm_source=social&utm_medium=twitter&utm_campaign=ahfowpost+" + formatted_date
+url_querystring = f"?utm_source=social&utm_medium=twitter&utm_campaign=ahfowpost+{formatted_date}"
 
 def get_latest_post(feed_url):
     print(f"Parsing feed: {feed_url}")
@@ -19,7 +19,9 @@ def get_latest_post(feed_url):
         return None, None
     
     latest_entry = feed.entries[0]
-    tweet_text = f"New post: {latest_entry.title}\n{latest_entry.link}{url_querystring}"
+    tweet_text = f"New post: {latest_entry.title}\n{latest_entry.link}"
+    if "fullofwishes" in tweet_text:
+        tweet_text = f"{tweet_text}{url_querystring}"
     return tweet_text, latest_entry.link
 
 def load_history():
