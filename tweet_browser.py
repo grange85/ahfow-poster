@@ -3,8 +3,14 @@ import sys
 import json
 import feedparser
 from playwright.sync_api import sync_playwright
+from datetime import date
+from pathlib import Path
 
 HISTORY_FILE = "tweeted_history.txt"
+today = date.today()
+# Format the date as YYYYMMDD
+formatted_date = today.strftime("%Y%m%d")
+url_querystring = "?utm_source=social&utm_medium=twitter&utm_campaign=ahfowpost+" + formatted_date
 
 def get_latest_post(feed_url):
     print(f"Parsing feed: {feed_url}")
@@ -13,7 +19,7 @@ def get_latest_post(feed_url):
         return None, None
     
     latest_entry = feed.entries[0]
-    tweet_text = f"New post: {latest_entry.title}\n{latest_entry.link}"
+    tweet_text = f"New post: {latest_entry.title}\n{latest_entry.link}{url_querystring}"
     return tweet_text, latest_entry.link
 
 def load_history():
@@ -28,11 +34,18 @@ def save_to_history(url):
 
 def post_to_x(tweet_text):
     cookies_json = os.environ.get("X_COOKIES")
-    if not cookies_json:
-        print("Error: X_COOKIES secret not found.")
-        return False
+    if cookies_json:
+        cookies = json.loads(cookies_json)
+    else:
+        local_cookie_path = Path.home() / ".config" / "ahfow-poster" / "x_cookies.json"
+        print(f"{local_cookie_path}")
+        if local_cookie_path.exists():
+            with open(local_cookie_path, "r") as f:
+                cookies = json.load(f)
+        else:
+            print("Error: X_COOKIES secret not found.")
+            return False
 
-    cookies = json.loads(cookies_json)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
