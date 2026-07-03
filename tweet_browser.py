@@ -19,7 +19,9 @@ def get_latest_post(feed_url):
     if not feed.entries:
         return None, None
     latest_entry = feed.entries[0]
-    tweet_description = textwrap.shorten(latest_entry.description, width=100, placeholder="...")
+    tweet_description = ""
+    if hasattr(latest_entry, "description"):
+        tweet_description = textwrap.shorten(latest_entry.description, width=100, placeholder="...")
     tweet_link = f"{latest_entry.link}"
     if "fullofwishes" in latest_entry.link:
         tweet_link = f"{latest_entry.link}{url_querystring}"
