@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import feedparser
+import textwrap
 from playwright.sync_api import sync_playwright
 from datetime import date
 from pathlib import Path
@@ -17,11 +18,12 @@ def get_latest_post(feed_url):
     feed = feedparser.parse(feed_url)
     if not feed.entries:
         return None, None
-    
     latest_entry = feed.entries[0]
-    tweet_text = f"New post: {latest_entry.title}\n{latest_entry.link}"
-    if "fullofwishes" in tweet_text:
-        tweet_text = f"{tweet_text}{url_querystring}"
+    tweet_description = textwrap.shorten(latest_entry.description, width=100, placeholder="...")
+    tweet_link = f"{latest_entry.link}"
+    if "fullofwishes" in latest_entry.link:
+        tweet_link = f"{latest_entry.link}{url_querystring}"
+    tweet_text = f"New post: {latest_entry.title}\n{tweet_description}\n{tweet_link}"
     return tweet_text, latest_entry.link
 
 def load_history():
