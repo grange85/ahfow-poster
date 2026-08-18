@@ -1,0 +1,42 @@
+name: Auto post YouTube videos
+
+on:
+  schedule:
+    - cron: '15 */6 * * *'
+  workflow_dispatch:
+
+# Grant write access to repository contents
+permissions:
+  contents: write
+
+jobs:
+  post-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install playwright feedparser
+          playwright install chromium --with-deps
+
+      - name: Run script for news
+        env:
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+        run: python tweet_browser.py "https://www.youtube.com/feeds/videos.xml?channel_id=UCwkyG_KgITfAm_OGoFNLFuQ&20250626"
+
+      # Automatically commit history changes back to Github
+      - name: Commit and push history log
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@://github.com"
+          git add tweeted_history.txt || true
+          git commit -m "Update tweeted history log [skip ci]" || true
+          git push
+
